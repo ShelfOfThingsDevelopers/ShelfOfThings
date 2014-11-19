@@ -13,6 +13,7 @@ Django REST framework ( >= 2.4.3 )
 
 ## Installation
 sudo pip3 install djangorestframework
+
 sudo pip3 install django
 
 
