@@ -2,8 +2,6 @@ __author__ = 'Victor Polevoy'
 
 from django.db import models
 
-from datetime import datetime
-
 
 class Products(models.Model):
     board_id = models.CharField(max_length=200, null=False, blank=False)

@@ -1,7 +1,7 @@
 __author__ = 'Victor Polevoy'
 
 
-from rest_framework import routers, serializers, viewsets
+from rest_framework import routers, serializers, viewsets, decorators
 from bscloud.models import Products, Product
 
 
@@ -14,10 +14,13 @@ class ProductsSerializer(serializers.ModelSerializer):
         fields = ('board_id', 'product_id')
 
 
-# ViewSets define the view behavior.
 class ProductsViewSet(viewsets.ModelViewSet):
     queryset = Products.objects.all()
     serializer_class = ProductsSerializer
+
+    @decorators.detail_route(['delete'])
+    def destroy(self, request, pk=None):
+        pass
 
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -30,13 +33,11 @@ class ProductSerializer(serializers.ModelSerializer):
         fields = ('product_id', 'name', 'additional_info')
 
 
-# ViewSets define the view behavior.
 class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
 
 
-# Routers provide an easy way of automatically determining the URL conf.
 class SerializersRouter():
     @staticmethod
     def get_router():
