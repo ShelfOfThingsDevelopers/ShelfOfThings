@@ -64,7 +64,7 @@ class JobsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Jobs
-        fields = ('job_type', 'board_id', 'product_id')
+        fields = ('job_type', 'product_id')
 
 
 class JobsViewSet(viewsets.ModelViewSet):
