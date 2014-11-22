@@ -1,12 +1,14 @@
 import mraa
 import threading
+import time
 
 class Shelf:
     eventListeners = []
     beepDurationS = 0.5
 
     # Range of used GPIOs
-    gpiosRange = range(2, 12)
+    #TODO restore to range(2, 12)
+    gpiosRange = [2]
     gpios = []
     
     # Used Analog IO port
@@ -15,13 +17,13 @@ class Shelf:
     # Array of items with corresponding GPIOs
     # Index - chip id
     # Value - Stated GPIO
-    itemGPIOs=[]
+    itemGPIOs=range(6)
 
     def __init__(self):
         # Initialising GPIOs
         for gpioN in self.gpiosRange:
-            gpio = mraa.Gpio(gpioN)
-            gpio.dir(mraa.DIR_IN)
+            gpio = StatedGPIO(mraa.Gpio(gpioN))
+            gpio.setStateOutHigh()
             self.gpios.append(gpio)
         self.governor = ShelfGovernor(self)
 
@@ -44,16 +46,14 @@ class Shelf:
     '''
     def turnLedOn(self, chipId):
         itemGPIO = self.itemGPIOs[chipId]
-        itemGPIO.dir(mraa.DIR_OUT)
-        itemGPIO.write(0)
-        return
+        itemGPIO.setStateIn()
 
     '''
     Turn off LED of item with specified ID
     '''
     def turnLedOff(self, chipId):
-        #TODO
-        return
+        itemGPIO = self.itemGPIOs[chipId]
+        itemGPIO.setStateOutHigh()
 
     '''
     Beep
@@ -81,7 +81,7 @@ class Shelf:
 
 class ShelfGovernor:
     delayS = 0.5
-    analogDelayS = 0.1
+    analogDelayS = 0.05
     impulseTimeS = 0.1
 
     def __init__(self, shelf):
@@ -92,43 +92,63 @@ class ShelfGovernor:
         self._shutdown_request = True
 
     def loop(self):
-        gpios = shelf.gpios
-        aio = shelf.aio
+        gpios = self.shelf.gpios
+        aio = self.shelf.aio
         self._shutdown_request = False
         while not self._shutdown_request:
             for gpio in gpios:
                 analogVal = aio.read()
-                gpio.dir(mraa.DIR_OUT)
-                gpio.write(1)
+                print 'aio1', aio.read()
+                if gpio.state == gpio.STATE_IN:
+                    gpio.setStateOutLow()
+                    time.sleep(0.001)
+                    gpio.setStateIn()
+                else:
+                    gpio.setStateOutLow()
+                    time.sleep(0.001)
+                    gpio.setStateOutHigh()
+                # Wait for capacitor to charge 
+                time.sleep(0.01)
                 t = time.time()
                 while aio.read() > analogVal:
                     time.sleep(self.analogDelayS)
+                    print 'aio2', aio.read()
                 t = time.time() - t
-                chipId = t / impulseTimeS
-                shelf.itemGPIOs[chipId]=gpio
-                gpio.write(0)
-                gpio.dir(mraa.DIR_IN)
+                print "t:", t
+                print 'aio3', aio.read()
+                chipId = int(t / self.impulseTimeS)
+                #self.shelf.itemGPIOs[chipId]=gpio
             time.sleep(self.delayS)
 
+'''
+Wrapper for GPIO because we need to store state
+'''
 class StatedGPIO:
     gpio=None
     state=None
     STATE_OUT_HIGH=0
     STATE_OUT_LOW=1
     STATE_IN=2
+
+    def __init__(self, gpio):
+        self.gpio = gpio
     
     def setStateOutHigh(self):
-        return
+        if self.state != self.STATE_OUT_HIGH:
+            if self.state == self.STATE_IN:
+                self.gpio.dir(mraa.DIR_OUT)
+            self.gpio.write(1)
 
     def setStateOutLow(self):
-        return
+        if self.state != self.STATE_OUT_LOW:
+            if self.state == self.STATE_IN:
+                self.gpio.dir(mraa.DIR_OUT)
+            self.gpio.write(0)
 
     def setStateIn(self):
-        return
-
-    def _setState(self, state):
-        if self.state != state:
-            
+        if self.state != self.STATE_IN:
+            self.gpio.write(0)
+            self.gpio.dir(mraa.DIR_IN)
 
 '''
 Interface for event listener
