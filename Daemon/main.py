@@ -24,14 +24,13 @@ class ShelfState:
 
 def service_thread(shelf):
     def callback(json):
-        #TODO some work with jobs
+        #TODO some jobs
         print json
+        for obj in json:
+            requests.delete('http://iot.vpolevoy.com/api/jobs/%s/' % obj['product_id'])
 
-    rest = RESTClient("http://iot.vpolevoy.com/api/product/?format=json", callback)
+    rest = RESTClient("http://iot.vpolevoy.com/api/jobs/?format=json", callback)
     rest.run()
-
-def edison_thread():
-    pass
 
 def main():
     #shelf = Shelf()
