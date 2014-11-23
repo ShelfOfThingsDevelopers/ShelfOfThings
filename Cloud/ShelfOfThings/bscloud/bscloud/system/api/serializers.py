@@ -94,12 +94,7 @@ class JobsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Jobs
-        # fields = ('job_type', 'product_id', 'status')
         fields = ('job_type', 'product_id', 'status')
-
-    def get_validation_exclusions(self):
-        exclusions = super(JobsSerializer, self).get_validation_exclusions()
-        return exclusions + ['product_id']
 
 
 class JobsViewSet(viewsets.ModelViewSet):

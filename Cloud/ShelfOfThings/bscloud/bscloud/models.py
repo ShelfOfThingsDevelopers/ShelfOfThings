@@ -26,10 +26,10 @@ class Products(models.Model):
 
 
 class Jobs(models.Model):
-    # product_id = models.CharField(max_length=200, null=False, blank=False)
+    product_id = models.CharField(max_length=200, null=False, blank=False)
     # board_id = models.CharField(max_length=200, null=False, blank=False)
     # dont needed:
     # board_id = models.ForeignKey(Board, 'board_id')
-    product_id = models.ForeignKey(Product, 'product_id')
+    # product_id = models.ForeignKey(Product, 'product_id')
     job_type = models.PositiveIntegerField(default=0, null=True, blank=True)
     status = models.BooleanField(default=False, blank=True)
