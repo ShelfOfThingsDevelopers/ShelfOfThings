@@ -9,10 +9,14 @@ Python 3 ( >= 3.2.3 )
 
 Django framework ( >= 1.6.0 )
 
-Django REST framework ( >= 2.4.3 ) 
+Django REST framework ( >= 2.4.3 )
+
+Django-filter
 
 ## Installation
 sudo pip3 install djangorestframework
+
+sudo pip3 install django-filter
 
 sudo pip3 install django
 
