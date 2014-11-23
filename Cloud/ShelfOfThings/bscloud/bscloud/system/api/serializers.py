@@ -2,27 +2,7 @@ __author__ = 'Victor Polevoy'
 
 
 from rest_framework import routers, serializers, viewsets, decorators, generics, filters
-from bscloud.models import Products, Product, Board, Jobs
-
-
-class ProductsSerializer(serializers.ModelSerializer):
-    # board_id = serializers.RelatedField()
-    # product_id = serializers.RelatedField()
-    board_id = serializers.CharField(required=True, max_length=200)
-    product_id = serializers.CharField(required=True, max_length=200)
-
-    class Meta:
-        model = Products
-        fields = ('board_id', 'product_id')
-
-
-class ProductsViewSet(viewsets.ModelViewSet):
-    queryset = Products.objects.all()
-    serializer_class = ProductsSerializer
-
-    # @decorators.detail_route(['delete'])
-    # def destroy(self, request, pk=None):
-    #     pass
+from bscloud.models import Product, Board, Jobs
 
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -106,7 +86,6 @@ class SerializersRouter():
     @staticmethod
     def get_router():
         router = routers.DefaultRouter()
-        router.register(r'products', ProductsViewSet)
         router.register(r'product', ProductViewSet)
         router.register(r'board', BoardViewSet)
         router.register(r'jobs', JobsViewSet)
