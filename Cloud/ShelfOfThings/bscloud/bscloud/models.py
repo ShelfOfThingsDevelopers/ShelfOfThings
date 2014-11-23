@@ -5,13 +5,14 @@ from django.db import models
 
 class Product(models.Model):
     product_id = models.CharField(max_length=200, null=False, blank=False, unique=True)
-    additional_info = models.CharField(max_length=2000)
-    name = models.CharField(max_length=200)
+    additional_info = models.CharField(max_length=2000, blank=True)
+    name = models.CharField(max_length=200, blank=True)
 
-    def save(self, force_insert=False, force_update=False, using=None,
-             update_fields=None):
-        product = Products.create(self.product_id, '')
-        super().save(force_insert, force_update, using, update_fields)
+    # def save(self, force_insert=False, force_update=False, using=None,
+    #          update_fields=None):
+    #     product = Products.create('123', self.product_id)
+    #     product.save()
+    #     super().save(force_insert, force_update, using, update_fields)
 
 
 class Board(models.Model):
@@ -25,16 +26,17 @@ class Board(models.Model):
         return board
 
 
-class Products(models.Model):
-    board_id = models.CharField(max_length=200, null=False, blank=False, unique=True)
-    product_id = models.CharField(max_length=200, null=False, blank=False)
+# class Products(models.Model):
+#     board_id = models.CharField(max_length=200, null=False, blank=False, unique=True)
+#     product_id = models.CharField(max_length=200, null=False, blank=False)
+#
+#
+#     @classmethod
+#     def create(cls, board_id, product_id):
+#         product = cls(board_id=board_id, product_id=product_id)
+#         # do something with the book
+#         return product
 
-
-    @classmethod
-    def create(cls, board_id, product_id):
-        product = cls(board_id=board_id, product_id=product_id)
-        # do something with the book
-        return product
     # product_id = models.ForeignKey(Product, 'product_id')
     # board_id = models.ForeignKey(Board, 'board_id')
 

@@ -26,9 +26,9 @@ class ProductsViewSet(viewsets.ModelViewSet):
 
 
 class ProductSerializer(serializers.ModelSerializer):
-    product_id = serializers.CharField(required=True, max_length=200)
-    name = serializers.CharField(required=True, max_length=200, read_only=False)
-    additional_info = serializers.CharField(required=True, max_length=2000)
+    product_id = serializers.CharField(required=True, max_length=200, blank=True)
+    name = serializers.CharField(required=False, max_length=200, read_only=False, blank=True)
+    additional_info = serializers.CharField(required=False, max_length=2000)
 
     class Meta:
         model = Product
