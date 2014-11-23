@@ -128,7 +128,7 @@ class StatedGPIO:
 
     def _setState(self, state):
         if self.state != state:
-            
+           pass 
 
 '''
 Interface for event listener
