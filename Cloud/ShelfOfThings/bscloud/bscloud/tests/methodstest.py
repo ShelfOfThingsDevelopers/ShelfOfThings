@@ -20,11 +20,13 @@ __author__ = 'Victor Polevoy'
 
 import requests
 
-# host = 'http://iot.vpolevoy.com'
-host = 'http://localhost:8000'
+host = 'http://iot.vpolevoy.com'
+# host = 'http://localhost:8000'
 
 headers = {"content-type": "application/x-www-form-urlencoded"}
-answer = requests.patch('%s/api/product/1/' % host, data='name=219dfsfjazafaka', headers=headers)
+# answer = requests.patch('%s/api/product/1/' % host, data='name=219dfsfjazafaka', headers=headers)
 
-answer = requests.post('%s/api/jobs/' % host, data='product_id=ds', headers=headers)
+# answer = requests.post('%s/api/jobs/' % host, data='product_id=ds', headers=headers)
+answer = requests.delete('%s/api/jobs/1/' % host)
+
 print('answer: %s' % answer)
