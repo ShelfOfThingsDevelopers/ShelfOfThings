@@ -10,7 +10,7 @@ class Product(models.Model):
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
-        product = Products.create(self.product_id)
+        product = Products.create(self.product_id, '')
         super().save(force_insert, force_update, using, update_fields)
 
 
