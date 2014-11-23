@@ -90,7 +90,6 @@ class JobsSerializer(serializers.ModelSerializer):
     # board_id = serializers.CharField(required=True, max_length=200)
     product_id = serializers.CharField(max_length=200)
     status = serializers.BooleanField(required=False, blank=True)
-    lookup_field = 'product_id'
 
     class Meta:
         model = Jobs
@@ -100,6 +99,7 @@ class JobsSerializer(serializers.ModelSerializer):
 class JobsViewSet(viewsets.ModelViewSet):
     queryset = Jobs.objects.all()
     serializer_class = JobsSerializer
+    lookup_field = 'product_id'
 
 
 class SerializersRouter():
