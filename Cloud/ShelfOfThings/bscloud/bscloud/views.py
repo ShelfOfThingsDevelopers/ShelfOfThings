@@ -3,6 +3,10 @@ from django.template import Context
 from django.template.loader import get_template
 from django.shortcuts import render_to_response
 
+from bscloud.models import Board
+
+import json
+import random
 
 
 def start_page(request):
@@ -21,3 +25,12 @@ def start_page(request):
     html = template.render(context)
 
     return HttpResponse(html)
+
+
+def board_reg(request):
+    hash_str = '%032x' % random.getrandbits(128)
+    board = Board.create(hash_str)
+    board.save()
+
+    answer = json.dumps({'board_id': hash_str})
+    return HttpResponse(answer)

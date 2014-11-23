@@ -13,6 +13,12 @@ class Board(models.Model):
     board_id = models.CharField(max_length=200, null=False, blank=False, unique=True)
     board_name = models.CharField(max_length=200, null=False, blank=False)
 
+    @classmethod
+    def create(cls, board_id, board_name='Unnamed board'):
+        board = cls(board_id=board_id, board_name=board_name)
+        # do something with the book
+        return board
+
 
 class Products(models.Model):
     product_id = models.ForeignKey(Product, 'product_id')
@@ -25,4 +31,5 @@ class Jobs(models.Model):
     # dont needed:
     # board_id = models.ForeignKey(Board, 'board_id')
     product_id = models.ForeignKey(Product, 'product_id')
-    job_type = models.PositiveIntegerField(null=False, blank=False)
+    job_type = models.PositiveIntegerField(default=0, null=True, blank=True)
+    status = models.BooleanField(default=False, blank=True)

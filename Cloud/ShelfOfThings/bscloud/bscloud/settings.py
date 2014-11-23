@@ -101,3 +101,7 @@ STATICFILES_DIRS = (
     #os.path.normpath(os.path.join(BASE_DIR, 'static'),
     #os.path.normpath(os.path.join(BASE_DIR, 'upload'),
 )
+
+REST_FRAMEWORK = {
+    'DEFAULT_FILTER_BACKENDS': ('rest_framework.filters.DjangoFilterBackend',)
+}
