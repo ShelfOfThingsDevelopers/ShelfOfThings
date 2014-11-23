@@ -146,9 +146,17 @@ class StatedGPIO:
             self.gpio.write(0)
 
     def setStateIn(self):
+<<<<<<< HEAD
+        return
+
+    def _setState(self, state):
+        if self.state != state:
+           pass 
+=======
         if self.state != self.STATE_IN:
             self.gpio.write(0)
             self.gpio.dir(mraa.DIR_IN)
+>>>>>>> 0270d75a74dc191b9a4b55c6a9b8bfa0772c6a27
 
 '''
 Interface for event listener
