@@ -1,5 +1,6 @@
 from RESTClient import RESTClient
-#from ShelfListener import ShelfListener
+from ShelfListener import ShelfListener
+from shelf import Shelf
 
 import json
 import requests
@@ -24,16 +25,20 @@ class ShelfState:
 
 def service_thread(shelf):
     def callback(json):
-        #TODO some jobs
-        print json
+	if shelf == None: return
         for obj in json:
+            shelf.turnLedOn(obj['product_id'])
             requests.delete('http://iot.vpolevoy.com/api/jobs/%s/' % obj['product_id'])
 
     rest = RESTClient("http://iot.vpolevoy.com/api/jobs/?format=json", callback)
     rest.run()
 
 def main():
-    #shelf = Shelf()
+    print 'starting up'
+    shelf = Shelf()
+    listener = ShelfListener()
+    shelf.addEventListener(listener)
+    shelf.startGovernor()
     #st = ShelfState()
     shelf_id = requests.get("http://iot.vpolevoy.com/api/register/").json()["board_id"]
     service = threading.Thread(target = service_thread, args = [None])

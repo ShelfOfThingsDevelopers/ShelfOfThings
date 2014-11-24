@@ -3,6 +3,8 @@ import pyupm_i2clcd as lcd
 import threading
 import time
 
+aioN = 2
+
 class Shelf:
     eventListeners = []
     beepDurationS = 0.5
@@ -18,11 +20,11 @@ class Shelf:
     aio = mraa.Aio(0)
     
     # Array of chip IDs
-    chipIDs=[0b00111001,
+    chipIDs=[#0b00111001,
             0b11011001,
             0b10010110,
-            0b00110110,
-            0b00100111,
+            #0b00110110,
+            #0b00100111,
             0b11100110]
 
     chipPresence=[False,
@@ -85,19 +87,22 @@ class Shelf:
             self.eventListeners.append(eventListener)
     
     def onItemAdded(self, chipId):
+	print 'fire on add'
         for listener in self.eventListeners:
-            listener.onItemAdded(position, chipId)
+	    print 'ON ADD LISTENER CALLBACK'
+            listener.onItemAdded(chipId)
 
     def onItemRemoved(self, chipId):
+	print 'fire on remove'
         for listener in self.eventListeners:
             listener.onItemRemoved(chipId)
 
 class ShelfGovernor:
     delayS = 0.5
-    responseDelayS = 0.5
-    resposeCheckPeriodS = 0.02
+    responseDelayS = 1.5
+    resposeCheckPeriodS = 0.01
 
-    noiseEpsilon = 200
+    noiseEpsilon = 10
 
     def __init__(self, shelf):
         self.shelf = shelf
@@ -107,7 +112,7 @@ class ShelfGovernor:
         self._shutdown_request = True
 
     def loop(self):
-        aio = mraa.Aio(0)
+        aio = mraa.Aio(aioN)
         gpioTx = self.shelf.gpioTx
         gpioITx = self.shelf.gpioITx
         chipIDs = self.shelf.chipIDs
@@ -116,30 +121,40 @@ class ShelfGovernor:
         shelf = self.shelf
         self._shutdown_request = False
         while not self._shutdown_request:
+            aio = mraa.Aio(aioN)
+            print 'mr', aio.read()
             for chipCtr in range(len(chipIDs)):
                 chipId = chipIDs[chipCtr]
+                print 'scan id', bin(chipId)
                 analogVal = aio.read()
+                print 'av', analogVal
                 sender.sendNumber(chipId)
                 t = time.time()
+		flagFound = False
                 while time.time() < (t + self.responseDelayS):
                     checkAnalog = aio.read()
+                    print 'ca', checkAnalog
                     if checkAnalog > (analogVal + self.noiseEpsilon):
+                        flagFound = True
+			print 'ca not noise'
                         if not shelf.chipPresence[chipCtr]:
                             shelf.onItemAdded(chipId)
                             shelf.chipPresence[chipCtr] = True
                             shelf.lcd.clear()
-                            shelf.lcd.write("Item was added")
+			    shelf.lcd.setCursor(0,0)
+                            shelf.lcd.write("   Added item")
                         pos = 0
-                        while posMinVals[pos] < checkAnalog:
-                            pos+=1
+                        #while posMinVals[pos] < checkAnalog:
+                        #    pos+=1
                         shelf.chipPositions[chipCtr] = pos
                         continue
                     time.sleep(self.resposeCheckPeriodS)
-                if shelf.chipPresence[chipCtr]:
+                if shelf.chipPresence[chipCtr] and not flagFound:
                     shelf.onItemRemoved(chipId)
                     shelf.chipPresence[chipCtr] = False
                     shelf.lcd.clear()
-                    shelf.lcd.write("Item was removed")
+		    shelf.lcd.setCursor(0,0)
+                    shelf.lcd.write("   Removed item")
             time.sleep(self.delayS)
 
 class Sender:
